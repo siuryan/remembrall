@@ -1,6 +1,8 @@
 package com.siuryan.watchschedule;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,12 +10,29 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.wear.widget.BoxInsetLayout;
 import android.support.wearable.activity.WearableActivity;
+import android.support.wearable.view.ProgressSpinner;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class MainActivity extends WearableActivity {
 
@@ -34,6 +53,8 @@ public class MainActivity extends WearableActivity {
 
     private int mActiveBackgroundColor;
 
+    private HashMap<String, String> items = new HashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,13 +63,22 @@ public class MainActivity extends WearableActivity {
         // Enables Always-on
         setAmbientEnabled();
 
+        InputStream inputStream = null;
+        try {
+            inputStream = new ReadXMLTask().execute("https://raw.githubusercontent.com/siuryan/remembrall/master/schedule.xml").get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        ReadXML.parseXML(items, inputStream);
+
         mTime = findViewById(R.id.time);
         mRemainingTime = findViewById(R.id.remaining_time);
         mNextActivity = findViewById(R.id.next_activity);
         mBackground = findViewById(R.id.background);
 
         mClock = new Clock(mTime);
-        mSchedule = new Schedule(mRemainingTime, mNextActivity);
+        mSchedule = new Schedule(items, mRemainingTime, mNextActivity);
 
         mActiveBackgroundColor = getResources().getColor(R.color.dark_grey, null);
 
@@ -135,6 +165,27 @@ public class MainActivity extends WearableActivity {
         @Override
         public void handleUpdate(MainActivity mainActivity) {
             mainActivity.updateDisplayAndSetRefresh();
+        }
+    }
+
+    private static class ReadXMLTask extends AsyncTask<String, Void, InputStream> {
+
+        @Override
+        protected InputStream doInBackground(String... urls) {
+            try {
+                URL url = new URL(urls[0]);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                // Starts the query
+                conn.connect();
+                return conn.getInputStream();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 

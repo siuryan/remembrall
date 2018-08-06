@@ -1,6 +1,7 @@
 package com.siuryan.watchschedule;
 
 
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -20,16 +21,8 @@ public class Schedule {
     private String currentNextActivity = "";
     private boolean hasVibrated = false;
 
-    public Schedule (TextView remainingTime, TextView nextActivity) {
-        //items = new ReadXML("schedule.xml").getItems();
-
-        //Log.d("testing: ", items.toString());
-
-        items = new HashMap<>();
-        items.put("Wake Up", "8:00 AM");
-        items.put("Sleep", "11:30 PM");
-        items.put("Test", "9:14 PM");
-
+    public Schedule(HashMap<String, String> items, TextView remainingTime, TextView nextActivity) {
+        this.items = items;
         this.remainingTime = remainingTime;
         this.nextActivity = nextActivity;
     }
