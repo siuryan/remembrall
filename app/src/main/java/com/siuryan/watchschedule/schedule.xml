@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<schedule>
+    <item>
+        <name>wake up</name>
+        <time>8:00 AM</time>
+    </item>
+    <item>
+        <name>sleep</name>
+        <time>0:00 AM</time>
+    </item>
+</schedule>
