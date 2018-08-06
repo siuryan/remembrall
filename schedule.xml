@@ -1,0 +1,10 @@
+<schedule>
+  <item>
+    <name>Wake Up</name>
+    <time>8:00 AM</time>
+  </item>
+  <item>
+    <name>Sleep</name>
+    <time>11:30 PM</time>
+  </item>
+</schedule>
