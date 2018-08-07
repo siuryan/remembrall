@@ -1,6 +1,7 @@
 package com.siuryan.watchschedule;
 
 
+import android.support.wear.widget.BoxInsetLayout;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ public class Schedule {
 
     public Schedule(HashMap<String, String> items, TextView remainingTime, TextView nextActivity) {
         this.items = items;
+
         this.remainingTime = remainingTime;
         this.nextActivity = nextActivity;
     }
@@ -53,7 +55,19 @@ public class Schedule {
     }
 
     private void setRemainingTime(int minutesToNextActivity, int hoursToNextActivity) {
-        if (minutesToNextActivity == 1 && hoursToNextActivity == 0) {
+        if (minutesToNextActivity == 0 && hoursToNextActivity == 0) {
+            remainingTime.setText(String.format(Locale.US,
+                    "%d min",
+                    minutesToNextActivity));
+        } else if (hoursToNextActivity > 1 && minutesToNextActivity == 0) {
+            remainingTime.setText(String.format(Locale.US,
+                    "%d hrs",
+                    minutesToNextActivity));
+        } else if (hoursToNextActivity == 1 && minutesToNextActivity == 0) {
+            remainingTime.setText(String.format(Locale.US,
+                    "%d hr",
+                    minutesToNextActivity));
+        } else if (minutesToNextActivity == 1 && hoursToNextActivity == 0) {
             remainingTime.setText(String.format(Locale.US,
                     "%d min",
                     minutesToNextActivity));
@@ -72,7 +86,7 @@ public class Schedule {
         }
     }
 
-    private int minutesToNextActivity(String nameOfNextActivity) {
+    public int minutesToNextActivity(String nameOfNextActivity) {
         String val = items.get(nameOfNextActivity);
 
         Calendar activityTime = parseCalendar(val);
@@ -85,7 +99,7 @@ public class Schedule {
         return minutes / 60;
     }
 
-    private String nameOfNextActivity(Calendar time) {
+    public String nameOfNextActivity(Calendar time) {
         String kingKey = "";
         Calendar kingTime = Calendar.getInstance();
         kingTime.add(Calendar.HOUR, 24);
