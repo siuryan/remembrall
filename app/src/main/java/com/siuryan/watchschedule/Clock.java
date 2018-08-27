@@ -1,10 +1,13 @@
 package com.siuryan.watchschedule;
 
 
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Clock {
 
@@ -42,5 +45,34 @@ public class Clock {
 
     private String formatAMPM(int ampm) {
         return ampm == Calendar.AM ? "AM" : "PM";
+    }
+
+    private static Calendar parseDate(String exp) {
+        Pattern p = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
+        Matcher m = p.matcher(exp);
+
+        int year = 0, month = 0, day = 0;
+
+        if (m.matches()) {
+            year = Integer.parseInt(m.group(1));
+            month = Integer.parseInt(m.group(2));
+            day = Integer.parseInt(m.group(3));
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        return cal;
+    }
+
+    public static boolean isToday(String exp) {
+        Calendar cal1 = parseDate(exp);
+        Calendar cal2 = Calendar.getInstance();
+
+        Log.d("testing", cal1.toString());
+        Log.d("testing", cal2.toString());
+
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) + 1 &&
+                cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
     }
 }

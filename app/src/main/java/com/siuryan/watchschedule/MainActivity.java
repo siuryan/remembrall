@@ -15,7 +15,9 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.ProgressSpinner;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,10 +27,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -48,15 +53,14 @@ public class MainActivity extends WearableActivity {
     private final Handler mScheduleHandler = new UpdateScheduleHandler(this);
 
     private TextView mTime;
-    private TextView mRemainingTime;
-    private TextView mNextActivity;
+    private ListView mTasksListView;
     private BoxInsetLayout mBackground;
     private Clock mClock;
     private Schedule mSchedule;
 
     private int mActiveBackgroundColor;
 
-    private HashMap<String, String> items = new HashMap<>();
+    private TaskList items = new TaskList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,23 +70,22 @@ public class MainActivity extends WearableActivity {
         // Enables Always-on
         setAmbientEnabled();
 
-        InputStream inputStream = null;
+        String input = null;
         try {
-            inputStream = new ReadXMLTask().execute("https://raw.githubusercontent.com/siuryan/remembrall/master/schedule.xml").get();
+            input = new GetTasksTask().execute("https://beta.todoist.com/API/v8/tasks").get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        ReadXML.parseXML(items, inputStream);
-        Log.d("testing", items.toString());
+        TodoistHandler.parseJSON(items, input);
 
         mTime = findViewById(R.id.time);
-        mRemainingTime = findViewById(R.id.remaining_time);
-        mNextActivity = findViewById(R.id.next_activity);
+        mTasksListView = findViewById(R.id.tasks);
         mBackground = findViewById(R.id.background);
 
         mClock = new Clock(mTime);
-        mSchedule = new Schedule(items, mRemainingTime, mNextActivity);
+        mSchedule = new Schedule(items, mTasksListView);
+        mSchedule.create();
 
         mActiveBackgroundColor = getResources().getColor(R.color.dark_grey, null);
 
@@ -91,11 +94,13 @@ public class MainActivity extends WearableActivity {
 
     private void updateDisplayAndSetRefresh() {
         mClock.update();
+        /*
         if (mSchedule.update()) {
             Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
             assert vibrator != null;
             vibrator.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
         }
+        */
 
         if (!this.isAmbient()) {
             // In Active mode update directly via handler.
@@ -103,6 +108,7 @@ public class MainActivity extends WearableActivity {
             long delayMs = ACTIVE_INTERVAL_MS - (timeMs % ACTIVE_INTERVAL_MS);
             mScheduleHandler.sendEmptyMessageDelayed(R.id.msg_update, delayMs);
 
+            /*
             int minsRemaining = mSchedule.minutesToNextActivity(mSchedule.nameOfNextActivity(Calendar.getInstance()));
 
             if (minsRemaining <= 10) {
@@ -111,6 +117,7 @@ public class MainActivity extends WearableActivity {
                         ContextCompat.getColor(this, R.color.dark_grey));
                 mBackground.setBackgroundColor(mActiveBackgroundColor);
             }
+            */
         } else {
             long timeMs = System.currentTimeMillis();
             long delayMs = MINUTE_INTERVAL_MS - (timeMs % MINUTE_INTERVAL_MS);
@@ -181,20 +188,31 @@ public class MainActivity extends WearableActivity {
         }
     }
 
-    private static class ReadXMLTask extends AsyncTask<String, Void, InputStream> {
+    private static class GetTasksTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected InputStream doInBackground(String... urls) {
+        protected String doInBackground(String... urls) {
             try {
                 URL url = new URL(urls[0]);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
                 conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Bearer " + Config.API_KEY);
                 conn.setDoInput(true);
                 // Starts the query
                 conn.connect();
-                return conn.getInputStream();
+                InputStream inputStream = conn.getInputStream();
+
+                BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                StringBuilder responseStrBuilder = new StringBuilder();
+
+                String inputStr;
+                while ((inputStr = streamReader.readLine()) != null) {
+                    responseStrBuilder.append(inputStr);
+                }
+
+                return responseStrBuilder.toString();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -3,8 +3,11 @@ package com.siuryan.watchschedule;
 
 import android.support.wear.widget.BoxInsetLayout;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -14,21 +17,30 @@ import java.util.regex.Pattern;
 
 public class Schedule {
 
-    private HashMap<String, String> items;
+    private TaskList items;
 
-    private TextView remainingTime;
-    private TextView nextActivity;
+    private ListView tasksListView;
 
     private String currentNextActivity = "";
     private boolean hasVibrated = false;
 
-    public Schedule(HashMap<String, String> items, TextView remainingTime, TextView nextActivity) {
+    public Schedule(TaskList items, ListView tasksListView) {
         this.items = items;
 
-        this.remainingTime = remainingTime;
-        this.nextActivity = nextActivity;
+        this.tasksListView = tasksListView;
     }
 
+    public void create() {
+        Object[] contents = items.getTodayTaskContents();
+        ArrayAdapter adapter = new ArrayAdapter<>(tasksListView.getContext(), R.layout.task_list_element, contents);
+        tasksListView.setAdapter(adapter);
+    }
+
+    public void update() {
+
+    }
+
+    /*
     public boolean update() {
         String nextActivityName = nameOfNextActivity(Calendar.getInstance());
         int minutesToActivity = minutesToNextActivity(nextActivityName);
@@ -43,7 +55,7 @@ public class Schedule {
             hasVibrated = false;
         }
 
-        if (minutesToActivity <= 10 && !hasVibrated) {
+        if ((minutesToActivity <= 10 && !hasVibrated) || minutesToActivity == 0) {
             hasVibrated = true;
             currentNextActivity = nextActivityName;
             return true;
@@ -51,7 +63,6 @@ public class Schedule {
 
         currentNextActivity = nextActivityName;
         return false;
-
     }
 
     private void setRemainingTime(int minutesToNextActivity, int hoursToNextActivity) {
@@ -149,5 +160,6 @@ public class Schedule {
 
         return cal;
     }
+    */
 
 }
