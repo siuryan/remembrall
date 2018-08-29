@@ -46,8 +46,8 @@ public class MainActivity extends WearableActivity {
 
     // Milliseconds between waking processor/screen for updates when active
     private static final long ACTIVE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
-    // 60 seconds for updating the clock in active mode
-    private static final long MINUTE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(60);
+    // 30 seconds for updating the clock in active mode
+    private static final long MINUTE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(30);
 
     // Handler for updating the clock in active mode
     private final Handler mScheduleHandler = new UpdateScheduleHandler(this);
@@ -56,11 +56,12 @@ public class MainActivity extends WearableActivity {
     private ListView mTasksListView;
     private BoxInsetLayout mBackground;
     private Clock mClock;
-    private Schedule mSchedule;
+
+    private TaskAdapter mTaskAdapter;
 
     private int mActiveBackgroundColor;
 
-    private TaskList items = new TaskList();
+    private TaskList todayItems = new TaskList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +78,17 @@ public class MainActivity extends WearableActivity {
             e.printStackTrace();
         }
 
-        TodoistHandler.parseJSON(items, input);
+        TodoistHandler.parseJSON(todayItems, input);
 
         mTime = findViewById(R.id.time);
         mTasksListView = findViewById(R.id.tasks);
         mBackground = findViewById(R.id.background);
 
         mClock = new Clock(mTime);
-        mSchedule = new Schedule(items, mTasksListView);
-        mSchedule.create();
+
+        todayItems.onlyToday();
+        mTaskAdapter = new TaskAdapter(this, todayItems);
+        mTasksListView.setAdapter(mTaskAdapter);
 
         mActiveBackgroundColor = getResources().getColor(R.color.dark_grey, null);
 

@@ -1,6 +1,9 @@
 package com.siuryan.watchschedule;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Task {
 
     private long id;
@@ -10,7 +13,8 @@ public class Task {
     private int priority;
     private String url;
     private boolean completed;
-    private String due;
+    private LocalDate dueDate;
+    private LocalDateTime due;
 
     public long getId() {
         return id;
@@ -68,15 +72,23 @@ public class Task {
         this.completed = completed;
     }
 
-    public String getDue() {
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDateTime getDue() {
         return due;
     }
 
-    public void setDue(String due) {
+    public void setDue(LocalDateTime due) {
         this.due = due;
     }
 
-    public Task(long id, long projectId, String content, int order, int priority, String url, boolean completed, String due) {
+    public Task(long id, long projectId, String content, int order, int priority, String url, boolean completed, LocalDate dueDate, LocalDateTime due) {
         this.id = id;
         this.projectId = projectId;
         this.content = content;
@@ -84,6 +96,7 @@ public class Task {
         this.priority = priority;
         this.url = url;
         this.completed = completed;
+        this.dueDate = dueDate;
         this.due = due;
     }
 
