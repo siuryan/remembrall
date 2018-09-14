@@ -1,5 +1,7 @@
 package com.siuryan.watchschedule;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +10,10 @@ import android.view.ViewGroup;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
     private TaskList mTaskList;
+    private Context context;
 
-    public TaskAdapter(TaskList list) {
-        super();
+    public TaskAdapter(Context context, TaskList list) {
+        this.context = context;
         this.mTaskList = list;
     }
 
@@ -36,13 +39,22 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return mTaskList.size();
     }
 
-    public static class TaskViewHolder extends RecyclerView.ViewHolder {
+    class TaskViewHolder extends RecyclerView.ViewHolder {
 
         public TaskView mView;
 
-        public TaskViewHolder(View content) {
+        public TaskViewHolder(final View content) {
             super(content);
             this.mView = (TaskView) content;
+            this.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, DetailsActivity.class);
+                    i.putExtra("TASK", mView.getTask());
+                    context.startActivity(i);
+                    mView.setSelected(true);
+                }
+            });
         }
 
         public TaskView getTaskView() {

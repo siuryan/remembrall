@@ -50,4 +50,8 @@ public class TaskView extends RelativeLayout {
         }
     }
 
+    public Task getTask() {
+        return task;
+    }
+
 }

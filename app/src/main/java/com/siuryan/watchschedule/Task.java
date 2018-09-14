@@ -1,10 +1,11 @@
 package com.siuryan.watchschedule;
 
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Task {
+public class Task implements Serializable {
 
     private long id;
     private long projectId;

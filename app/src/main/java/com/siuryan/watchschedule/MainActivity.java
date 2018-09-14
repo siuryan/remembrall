@@ -91,7 +91,7 @@ public class MainActivity extends WearableActivity {
         mClock = new Clock(mTime);
 
         //todayItems.onlyToday();
-        mTaskAdapter = new TaskAdapter(todayItems);
+        mTaskAdapter = new TaskAdapter(this, todayItems);
         mTasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mTasksRecyclerView.setAdapter(mTaskAdapter);
 
