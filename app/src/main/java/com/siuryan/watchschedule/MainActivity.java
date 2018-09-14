@@ -2,7 +2,10 @@ package com.siuryan.watchschedule;
 
 import android.animation.ArgbEvaluator;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +28,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,6 +49,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import static com.siuryan.watchschedule.Config.GET_TASKS_URL;
 
 public class MainActivity extends WearableActivity {
 
@@ -75,14 +81,28 @@ public class MainActivity extends WearableActivity {
         // Enables Always-on
         setAmbientEnabled();
 
-        String input = null;
-        try {
-            input = new GetTasksTask().execute("https://beta.todoist.com/API/v8/tasks").get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        TodoistHandler.parseJSON(todayItems, input);
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected) {
+            Toast.makeText(this, "No network connection", Toast.LENGTH_LONG).show();
+        } else {
+            String input = null;
+            try {
+                input = new GetTasksTask().execute(GET_TASKS_URL).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            TodoistHandler.parseJSON(todayItems, input);
+        }
 
         mTime = findViewById(R.id.time);
         mTasksRecyclerView = findViewById(R.id.tasks);
@@ -90,7 +110,7 @@ public class MainActivity extends WearableActivity {
 
         mClock = new Clock(mTime);
 
-        //todayItems.onlyToday();
+        todayItems.onlyToday();
         mTaskAdapter = new TaskAdapter(this, todayItems);
         mTasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mTasksRecyclerView.setAdapter(mTaskAdapter);

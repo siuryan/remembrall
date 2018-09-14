@@ -17,10 +17,27 @@
         app:boxedEdges="all">
 
         <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
+            android:id="@+id/task_description"
+            android:gravity="center"
             android:layout_height="wrap_content"
-            android:text="@string/hello_world" />
+            android:layout_width="match_parent"
+            tools:text="Texting" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:background="@null"
+            android:layout_gravity="bottom|start"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:src="@drawable/ic_cc_clear" />
+
+        <ImageButton
+            android:id="@+id/complete_button"
+            android:background="@null"
+            android:layout_gravity="bottom|end"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:src="@drawable/ic_cc_checkmark" />
 
     </FrameLayout>
 </android.support.wear.widget.BoxInsetLayout>
