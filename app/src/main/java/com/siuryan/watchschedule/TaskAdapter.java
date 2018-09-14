@@ -1,63 +1,53 @@
 package com.siuryan.watchschedule;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 
-public class TaskAdapter extends ArrayAdapter<Task> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private Context mContext;
     private TaskList mTaskList;
 
-    public TaskAdapter(Context context, TaskList list) {
-        super(context, 0, list.getTasks());
-        mContext = context;
-        mTaskList = list;
+    public TaskAdapter(TaskList list) {
+        super();
+        this.mTaskList = list;
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View listItem = convertView;
-        ViewHolder viewHolder;
+    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        TaskView taskView = new TaskView(parent.getContext());
 
-        if (convertView == null) {
-            listItem = LayoutInflater.from(mContext).inflate(R.layout.task_list_element, parent, false);
+        taskView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
 
-            viewHolder = new ViewHolder();
-            viewHolder.content = listItem.findViewById(R.id.label);
-            viewHolder.time = listItem.findViewById(R.id.task_time);
-
-            listItem.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) listItem.getTag();
-        }
-
-        Task currentTask = mTaskList.getTask(position);
-
-        viewHolder.content.setText(currentTask.getContent());
-
-        if (currentTask.getDue() != null) {
-            viewHolder.time.setText(currentTask.getDue().format(DateTimeFormatter.ofPattern("HH:mm")));
-        } else {
-            viewHolder.time.setText("");
-        }
-
-        return listItem;
+        return new TaskViewHolder(taskView);
     }
 
-    static class ViewHolder {
-        TextView content;
-        TextView time;
+    @Override
+    public void onBindViewHolder(TaskViewHolder holder, int position) {
+        holder.getTaskView().setTask(mTaskList.getTask(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return mTaskList.size();
+    }
+
+    public static class TaskViewHolder extends RecyclerView.ViewHolder {
+
+        public TaskView mView;
+
+        public TaskViewHolder(View content) {
+            super(content);
+            this.mView = (TaskView) content;
+        }
+
+        public TaskView getTaskView() {
+            return mView;
+        }
     }
 
 }

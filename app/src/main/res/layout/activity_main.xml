@@ -25,7 +25,7 @@
             android:paddingBottom="@dimen/screen_percentage_05"
             tools:text="9:43 PM" />
 
-        <ListView
+        <android.support.wear.widget.WearableRecyclerView
             android:id="@+id/tasks"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

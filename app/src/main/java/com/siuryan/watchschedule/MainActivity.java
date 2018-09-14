@@ -10,10 +10,14 @@ import android.os.Message;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.BoxInsetLayout;
+import android.support.wear.widget.WearableRecyclerView;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.ProgressSpinner;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -53,7 +57,7 @@ public class MainActivity extends WearableActivity {
     private final Handler mScheduleHandler = new UpdateScheduleHandler(this);
 
     private TextView mTime;
-    private ListView mTasksListView;
+    private WearableRecyclerView mTasksRecyclerView;
     private BoxInsetLayout mBackground;
     private Clock mClock;
 
@@ -81,14 +85,15 @@ public class MainActivity extends WearableActivity {
         TodoistHandler.parseJSON(todayItems, input);
 
         mTime = findViewById(R.id.time);
-        mTasksListView = findViewById(R.id.tasks);
+        mTasksRecyclerView = findViewById(R.id.tasks);
         mBackground = findViewById(R.id.background);
 
         mClock = new Clock(mTime);
 
-        todayItems.onlyToday();
-        mTaskAdapter = new TaskAdapter(this, todayItems);
-        mTasksListView.setAdapter(mTaskAdapter);
+        //todayItems.onlyToday();
+        mTaskAdapter = new TaskAdapter(todayItems);
+        mTasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mTasksRecyclerView.setAdapter(mTaskAdapter);
 
         mActiveBackgroundColor = getResources().getColor(R.color.dark_grey, null);
 

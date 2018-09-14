@@ -23,6 +23,8 @@ public class TaskList {
         tasks.remove(task);
     }
 
+    public int size() { return tasks.size(); }
+
     public String[] getTaskContents() {
         String[] contents = new String[tasks.size()];
         for (int i = 0; i < tasks.size(); i++) {
