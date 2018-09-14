@@ -1,5 +1,6 @@
 package com.siuryan.watchschedule;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -51,7 +52,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 public void onClick(View view) {
                     Intent i = new Intent(context, DetailsActivity.class);
                     i.putExtra("TASK", mView.getTask());
-                    context.startActivity(i);
+                    ((Activity) context).startActivityForResult(i, 0);
                     mView.setSelected(true);
                 }
             });

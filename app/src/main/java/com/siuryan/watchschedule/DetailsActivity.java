@@ -1,5 +1,6 @@
 package com.siuryan.watchschedule;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
@@ -38,7 +39,7 @@ public class DetailsActivity extends WearableActivity {
             public void onClick(View view) {
                 new DeleteTask().execute(String.format(DELETE_URL, task.getId()));
                 Toast.makeText(DetailsActivity.this, "Deleted task", Toast.LENGTH_SHORT).show();
-                finish();
+                closeDetails(task);
             }
         });
 
@@ -47,12 +48,19 @@ public class DetailsActivity extends WearableActivity {
             public void onClick(View view) {
                 new CompleteTask().execute(String.format(COMPLETE_URL, task.getId()));
                 Toast.makeText(DetailsActivity.this, "Completed task", Toast.LENGTH_SHORT).show();
-                finish();
+                closeDetails(task);
             }
         });
 
         // Enables Always-on
         setAmbientEnabled();
+    }
+
+    private void closeDetails(Task task) {
+        Intent data = new Intent();
+        data.putExtra("TASK_HANDLED", task);
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     private static class DeleteTask extends AsyncTask<String, Void, Void> {

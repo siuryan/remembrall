@@ -3,6 +3,7 @@ package com.siuryan.watchschedule;
 import android.animation.ArgbEvaluator;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -150,6 +151,18 @@ public class MainActivity extends WearableActivity {
             long timeMs = System.currentTimeMillis();
             long delayMs = MINUTE_INTERVAL_MS - (timeMs % MINUTE_INTERVAL_MS);
             mScheduleHandler.sendEmptyMessageDelayed(R.id.msg_update, delayMs);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("testing", "h");
+        if (resultCode == RESULT_OK) {
+            Log.d("testing", "hi");
+            Task taskToRemove = (Task) data.getSerializableExtra("TASK_HANDLED");
+            todayItems.removeTask(taskToRemove);
+            Log.d("testing", todayItems.toString());
+            mTaskAdapter.notifyDataSetChanged();
         }
     }
 

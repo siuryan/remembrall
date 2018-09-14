@@ -105,4 +105,9 @@ public class Task implements Serializable {
     public String toString() {
         return this.content;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return getClass() == obj.getClass() && this.getId() == ((Task) obj).getId();
+    }
 }
