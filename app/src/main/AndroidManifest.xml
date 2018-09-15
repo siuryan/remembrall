@@ -37,7 +37,10 @@
         </activity>
         <activity
             android:name=".DetailsActivity"
-            android:label="@string/title_activity_details"></activity>
+            android:label="@string/title_activity_details" />
+        <activity
+            android:name=".AddTaskActivity"
+            android:label="@string/title_activity_add_task"></activity>
     </application>
 
 </manifest>

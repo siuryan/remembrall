@@ -4,6 +4,7 @@ package com.siuryan.watchschedule;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
@@ -87,6 +88,19 @@ public class TodoistHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static String parseJSONProject(String input) {
+        try {
+            JSONObject jsonObject = new JSONObject(input);
+
+            if (jsonObject.has("name")) {
+                return jsonObject.getString("name");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }

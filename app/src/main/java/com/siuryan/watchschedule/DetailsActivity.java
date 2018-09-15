@@ -9,11 +9,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import static com.siuryan.watchschedule.Config.COMPLETE_URL;
 import static com.siuryan.watchschedule.Config.DELETE_URL;
+import static com.siuryan.watchschedule.Config.DETAILS_FORMAT;
+import static com.siuryan.watchschedule.Config.GET_PROJECT_URL;
+import static com.siuryan.watchschedule.TodoistHandler.parseJSONProject;
 
 public class DetailsActivity extends WearableActivity {
 
@@ -29,7 +36,20 @@ public class DetailsActivity extends WearableActivity {
         final Task task = (Task) getIntent().getSerializableExtra("TASK");
 
         mTextView = findViewById(R.id.task_description);
-        mTextView.setText(task.getContent());
+        String date = task.getDue() != null ? task.getDue().toString() : (task.getDueDate() != null ? task.getDueDate().toString() : "");
+        String project = "";
+        try {
+            project = new GetProjectTask().execute(String.format(GET_PROJECT_URL, task.getProjectId())).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        project = parseJSONProject(project);
+
+        mTextView.setText(String.format(DETAILS_FORMAT,
+                task.getContent(),
+                project,
+                date,
+                "p" + task.getPriority()));
 
         mDeleteButton = findViewById(R.id.delete_button);
         mCompleteButton = findViewById(R.id.complete_button);
@@ -98,6 +118,38 @@ public class DetailsActivity extends WearableActivity {
                 conn.setDoInput(true);
                 // Starts the query
                 conn.getResponseCode();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private static class GetProjectTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                URL url = new URL(urls[0]);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Bearer " + Config.API_KEY);
+                conn.setDoInput(true);
+                // Starts the query
+                conn.connect();
+                InputStream inputStream = conn.getInputStream();
+
+                BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                StringBuilder responseStrBuilder = new StringBuilder();
+
+                String inputStr;
+                while ((inputStr = streamReader.readLine()) != null) {
+                    responseStrBuilder.append(inputStr);
+                }
+
+                return responseStrBuilder.toString();
             } catch (Exception e) {
                 e.printStackTrace();
             }

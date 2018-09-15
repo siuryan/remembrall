@@ -18,9 +18,9 @@
 
         <TextView
             android:id="@+id/task_description"
-            android:gravity="center"
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
             tools:text="Texting" />
 
         <ImageButton
@@ -38,6 +38,8 @@
             android:layout_height="50dp"
             android:layout_width="50dp"
             android:src="@drawable/ic_cc_checkmark" />
+
+
 
     </FrameLayout>
 </android.support.wear.widget.BoxInsetLayout>

@@ -1,7 +1,5 @@
 package com.siuryan.watchschedule;
 
-import android.animation.ArgbEvaluator;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,30 +9,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.BoxInsetLayout;
 import android.support.wear.widget.WearableRecyclerView;
 import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.ProgressSpinner;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -42,14 +24,8 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import static com.siuryan.watchschedule.Config.GET_TASKS_URL;
 
@@ -67,6 +43,8 @@ public class MainActivity extends WearableActivity {
     private WearableRecyclerView mTasksRecyclerView;
     private BoxInsetLayout mBackground;
     private Clock mClock;
+
+    private ImageButton mAddButton;
 
     private TaskAdapter mTaskAdapter;
 
@@ -118,6 +96,15 @@ public class MainActivity extends WearableActivity {
 
         mActiveBackgroundColor = getResources().getColor(R.color.dark_grey, null);
 
+        mAddButton = findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
+                startActivity(intent);
+            }
+        });
+
         mScheduleHandler.sendEmptyMessage(R.id.msg_update);
     }
 
@@ -156,12 +143,9 @@ public class MainActivity extends WearableActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("testing", "h");
         if (resultCode == RESULT_OK) {
-            Log.d("testing", "hi");
             Task taskToRemove = (Task) data.getSerializableExtra("TASK_HANDLED");
             todayItems.removeTask(taskToRemove);
-            Log.d("testing", todayItems.toString());
             mTaskAdapter.notifyDataSetChanged();
         }
     }
