@@ -1,7 +1,7 @@
 # remembrall
-WearOS app for keeping your schedule straight
+WearOS todo list app for keeping your schedule straight
 
-This app integrates with [Todoist](https://todoist.com/) to display your to-do items on your smartwatch. I decided to create this app because Todoist's mobile app does not have an easy way to view these items without using a phone, and I thought it would be much more convenient if I could simply see them from my watch.
+This app integrates with [Todoist](https://todoist.com/) to display your to-do items on your smartwatch. I created this app because Todoist's current smartwatch app requires you to use your phone to send tasks to your watch as notifications, and I thought it would be much more convenient if I could simply see the tasks in an app on my watch.
 
 This app is not created by, affiliated with, or supported by Doist.
 
